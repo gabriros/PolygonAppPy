@@ -103,12 +103,14 @@ class GamePage(tk.Frame):
 
         #Definition: da 2K a full hd 1,34. Da full hd a 720 1,5. Da 2k a 720 2.
         a=1504
-        b=752 user32 = ctypes.windll.user32
+        b=752
+        user32 = ctypes.windll.user32
         if(user32.GetSystemMetrics(0) == 2560 and user32.GetSystemMetrics(1) == 1440):
-        a=1000
-        b=2000 elif(user32.GetSystemMetrics(0) == 1280 and user32.GetSystemMetrics(1) == 720):
-        a=1003
-        b=501
+            a=1000
+            b=2000 
+        elif(user32.GetSystemMetrics(0) == 1280 and user32.GetSystemMetrics(1) == 720):
+            a=1003
+            b=501
         #Items
         c = Canvas(self, bg="white", height=b, width=a)
 
