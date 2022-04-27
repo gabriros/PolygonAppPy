@@ -1,9 +1,13 @@
 import tkinter as tk
 import random
+import ctypes
 from tkinter import *
 from tkinter import colorchooser
 from tkinter.colorchooser import askcolor
 from PIL import Image, ImageTk
+
+bgColors = "gray"
+
 
 class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -11,12 +15,15 @@ class Application(tk.Tk):
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
 
+        user32 = ctypes.windll.user32
+        screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+
         container.grid_rowconfigure(0, weight = 1)
         container.columnconfigure(0, weight = 1)
 
         self.frames = {}
         for F in (MenuPage, OptionsPage, GamePage):
-            frame = F(container, self)
+            frame = F(container, self, bg = bgColors)
             self.frames[F] = frame
             frame.grid(row = 0, column = 0, sticky = "nsew")
         
@@ -28,14 +35,14 @@ class Application(tk.Tk):
 
 
 class MenuPage(tk.Frame):
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+    def __init__(self, parent, controller, bg=None, fg=None):
+        tk.Frame.__init__(self, parent, bg=bg, fg=fg)
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
         self.grid_rowconfigure(2, weight=1)
         self.grid_rowconfigure(3, weight=1)
         self.grid_columnconfigure(0, weight=1)
-
+        #backColor = OptionsPage.configure(background=color)
         logo = Image.open('logo.png')
         resizedLogo = logo.resize((442,100), Image.ANTIALIAS)
         newLogo = ImageTk.PhotoImage(resizedLogo)
@@ -55,8 +62,8 @@ class MenuPage(tk.Frame):
 
 class OptionsPage(tk.Frame):
         
-     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+     def __init__(self, parent, controller, bg=None, fg=None):
+        tk.Frame.__init__(self, parent, bg=bg, fg=fg)
         canvas = tk.Canvas(self, width=600, height=300)
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
@@ -66,7 +73,7 @@ class OptionsPage(tk.Frame):
         def change_color():
             colors = askcolor(title="Background Color Chooser")
             self.configure(bg=colors[1])
-            #MenuPage.config.
+            #MenuPage.tk.Frame.__init__(MenuPage, Application, bg = colors[1], fg=fg)
             #frame = MenuPage (self.configure(bg=colors[1]))
             #menuPage.configure(bg=colors[1])
             #Frame.configure(bg=colors[1])
@@ -82,8 +89,8 @@ class OptionsPage(tk.Frame):
 
 
 class GamePage(tk.Frame):
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+    def __init__(self, parent, controller, bg=None, fg=None):
+        tk.Frame.__init__(self, parent, bg=bg, fg=fg)
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
         self.grid_rowconfigure(2, weight=1)
@@ -91,15 +98,35 @@ class GamePage(tk.Frame):
         self.grid_columnconfigure(1, weight=1)
         l = tk.IntVar();
 
+        user32 = ctypes.windll.user32
+        screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+
+        #Definition: da 2K a full hd 1,34. Da full hd a 720 1,5. Da 2k a 720 2.
+        a=1504
+        b=752 user32 = ctypes.windll.user32
+        if(user32.GetSystemMetrics(0) == 2560 and user32.GetSystemMetrics(1) == 1440):
+        a=1000
+        b=2000 elif(user32.GetSystemMetrics(0) == 1280 and user32.GetSystemMetrics(1) == 720):
+        a=1003
+        b=501
+        #Items
+        c = Canvas(self, bg="white", height=b, width=a)
+
+
+
         #Items
         c = Canvas(self, bg="white", height=1000, width=2000)    
         gameBackButton = tk.Button(self, text="Back", command=lambda: controller.show_frame(MenuPage))
         rectangle = tk.Radiobutton(self, text="Rectangle", variable=l, value=0, command=lambda: print(l.get()))
-        triangle = tk.Radiobutton(self, text="Rectangle", variable=l, value=0, command=lambda: print(l.get()))
+        rectBar = Scale(self, from_=5, to=20, orient=HORIZONTAL)
+        triangle = tk.Radiobutton(self, text="Triangle", variable=l, value=0, command=lambda: print(l.get()))
+        triBar = Scale(self, from_=5, to=20, orient=HORIZONTAL)
+
 
         #show Items
         c.grid(sticky="W", row=0, column=0, padx=30, pady=30)
         rectangle.grid(sticky="W", row=1, column=0, padx=30, pady=(30,0))
+        rectBar.grid(row=1, column=0, padx=30, pady=(30,0))
         triangle.grid(sticky="W", row=2, column=0, padx=30, pady=20)
         gameBackButton.grid(sticky="E", row=2, column=1, padx=80, pady=40)
 
