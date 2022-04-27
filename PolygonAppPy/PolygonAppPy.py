@@ -101,6 +101,8 @@ class GamePage(tk.Frame):
         user32 = ctypes.windll.user32
         screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
 
+        def GetBase():
+            r=1
         #Definition: da 2K a full hd 1,34. Da full hd a 720 1,5. Da 2k a 720 2.
         a=1504
         b=752
@@ -111,26 +113,27 @@ class GamePage(tk.Frame):
         elif(user32.GetSystemMetrics(0) == 1280 and user32.GetSystemMetrics(1) == 720):
             a=1003
             b=501
+        
         #Items
-        c = Canvas(self, bg="white", height=b, width=a)
-
-
-
-        #Items
-        c = Canvas(self, bg="white", height=1000, width=2000)    
+        c = Canvas(self, bg="white", height=a, width=b)
         gameBackButton = tk.Button(self, text="Back", command=lambda: controller.show_frame(MenuPage))
         rectangle = tk.Radiobutton(self, text="Rectangle", variable=l, value=0, command=lambda: print(l.get()))
-        rectBar = Scale(self, from_=5, to=20, orient=HORIZONTAL)
+        rectBase = Scale(self, from_=1, to=10, orient=HORIZONTAL, label="Base")
+        rectHeight = Scale(self, from_=1, to=10, orient=HORIZONTAL, label="Height")
         triangle = tk.Radiobutton(self, text="Triangle", variable=l, value=0, command=lambda: print(l.get()))
-        triBar = Scale(self, from_=5, to=20, orient=HORIZONTAL)
-
+        triBase = Scale(self, from_=1, to=10, orient=HORIZONTAL, label="Base")
+        triHeight = Scale(self, from_=1, to=10, orient=HORIZONTAL, label="Height")
 
         #show Items
         c.grid(sticky="W", row=0, column=0, padx=30, pady=30)
         rectangle.grid(sticky="W", row=1, column=0, padx=30, pady=(30,0))
-        rectBar.grid(row=1, column=0, padx=30, pady=(30,0))
+        rectBase.grid(row=1, column=0, padx=(50.0), pady=(30,0))
+        rectHeight.grid(sticky="E", row=1, column=0)
         triangle.grid(sticky="W", row=2, column=0, padx=30, pady=20)
+        triBase.grid(row=2, column=0)
+        triHeight.grid(sticky="E", row=2, column=0)
         gameBackButton.grid(sticky="E", row=2, column=1, padx=80, pady=40)
+        
 
 app = Application()
 app.overrideredirect(True)
