@@ -6,7 +6,7 @@ from tkinter import colorchooser
 from tkinter.colorchooser import askcolor
 from PIL import Image, ImageTk
 
-bgColors = "gray"
+colors = [(126, 150, 194), '#7e96c2']
 
 
 class Application(tk.Tk):
@@ -23,7 +23,7 @@ class Application(tk.Tk):
 
         self.frames = {}
         for F in (MenuPage, OptionsPage, GamePage):
-            frame = F(container, self, bg = bgColors)
+            frame = F(container, self, bg=colors[1], fg=None)
             self.frames[F] = frame
             frame.grid(row = 0, column = 0, sticky = "nsew")
         
@@ -35,17 +35,35 @@ class Application(tk.Tk):
 
 
 class MenuPage(tk.Frame):
-    def __init__(self, parent, controller, bg=None, fg=None):
+    def __init__(self, parent, controller, bg, fg):
         tk.Frame.__init__(self, parent, bg=bg, fg=fg)
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
         self.grid_rowconfigure(2, weight=1)
         self.grid_rowconfigure(3, weight=1)
         self.grid_columnconfigure(0, weight=1)
-        #backColor = OptionsPage.configure(background=color)
+
         logo = Image.open('logo.png')
-        resizedLogo = logo.resize((442,100), Image.ANTIALIAS)
+        logo = logo.convert("RGBA")
+
+        datas = logo.getdata()
+
+        newData = []
+        for item in datas:
+            if item[0] == 255 and item[1] == 255 and item[2] == 255:
+                newData.append((255, 255, 255, 0))
+            else:
+                if item[0] > 150:
+                    newData.append((0, 0, 0, 255))
+                else:
+                    newData.append(item)
+
+        logo.putdata(newData)
+        logo.save("logo_transparent.png", "PNG")
+        logoPNG = Image.open("logo_transparent.png")
+        resizedLogo = logoPNG.resize((442,100), Image.ANTIALIAS)
         newLogo = ImageTk.PhotoImage(resizedLogo)
+
         logo_label = tk.Label(self, image = newLogo)
         logo_label.image = newLogo
         
@@ -60,36 +78,11 @@ class MenuPage(tk.Frame):
         optionsButton.grid(row=2, column=0, pady=100, padx=0)
         exitButton.grid(row=3, column=0, pady=(0,100), padx=0)
 
-class OptionsPage(tk.Frame):
-        
-     def __init__(self, parent, controller, bg=None, fg=None):
-        tk.Frame.__init__(self, parent, bg=bg, fg=fg)
-        canvas = tk.Canvas(self, width=600, height=300)
-        self.grid_rowconfigure(0, weight=1)
-        self.grid_rowconfigure(1, weight=1)
-        self.grid_rowconfigure(2, weight=1)
-        self.grid_columnconfigure(0, weight=1)
 
-        def change_color():
-            colors = askcolor(title="Background Color Chooser")
-            self.configure(bg=colors[1])
-            #MenuPage.tk.Frame.__init__(MenuPage, Application, bg = colors[1], fg=fg)
-            #frame = MenuPage (self.configure(bg=colors[1]))
-            #menuPage.configure(bg=colors[1])
-            #Frame.configure(bg=colors[1])
-            #GamePage.configure()
-
-        #buttons
-        backgroundButton = tk.Button(self, text="Background color", command=change_color)
-        optBackButton = tk.Button(self, text="Back", command=lambda: controller.show_frame(MenuPage))
-
-        #show Items
-        backgroundButton.grid(column=0, row=0)
-        optBackButton.grid(column=0, row=1)
 
 
 class GamePage(tk.Frame):
-    def __init__(self, parent, controller, bg=None, fg=None):
+    def __init__(self, parent, controller, bg, fg):
         tk.Frame.__init__(self, parent, bg=bg, fg=fg)
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
@@ -133,7 +126,38 @@ class GamePage(tk.Frame):
         triBase.grid(row=2, column=0)
         triHeight.grid(sticky="E", row=2, column=0)
         gameBackButton.grid(sticky="E", row=2, column=1, padx=80, pady=40)
+
+class OptionsPage(tk.Frame):
         
+     def __init__(self, parent, controller, bg, fg):
+        tk.Frame.__init__(self, parent, bg=bg, fg=fg)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        #men = MenuPage(None, None, bg, fg)
+        #gam = GamePage(None,None, bg, fg)
+        #opt = OptionsPage(None, None, bg, fg)
+        
+
+        def change_color():
+            colors = askcolor(title="Background Color Chooser")
+            print(colors)
+            r = colors[1]
+            Application.frames = {}
+            for F in (MenuPage, OptionsPage, GamePage):
+                frame = F(controller, self, bg = r, fg=None)
+                print("a")
+                Application.frames[F] = frame
+                #frame.grid(row = 0, column = 0, sticky = "nsew")
+
+        #buttons
+        backgroundButton = tk.Button(self, text="Background color", command=change_color)
+        optBackButton = tk.Button(self, text="Back", command=lambda: controller.show_frame(MenuPage))
+
+        #show Items
+        backgroundButton.grid(column=0, row=0)
+        optBackButton.grid(column=0, row=1)
 
 app = Application()
 app.overrideredirect(True)
